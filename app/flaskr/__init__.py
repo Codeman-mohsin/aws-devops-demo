@@ -1,4 +1,5 @@
 import os
+import secrets
 
 from flask import Flask
 
@@ -7,8 +8,8 @@ def create_app(test_config=None):
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        # a default secret that should be overridden by instance config
-        SECRET_KEY="dev",
+        # use the configured secret or generate a random local fallback
+        SECRET_KEY=os.environ.get("FLASK_SECRET_KEY") or secrets.token_hex(32),
         # store the database in the instance folder
         DATABASE=os.path.join(app.instance_path, "flaskr.sqlite"),
     )
@@ -46,3 +47,4 @@ def create_app(test_config=None):
     app.add_url_rule("/", endpoint="index")
 
     return app
+
